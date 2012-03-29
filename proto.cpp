@@ -237,6 +237,7 @@ int main (int argc, char *argv[])
 	VideoCapture capture (-1);
 	Mat frame;
 	
+	/*
 	stringstream fn;
 	fn << "two" << time (NULL) << ".mov";
 	writer->open (fn.str (), CV_FOURCC ('M', 'P', '4', 'V'), 24,
@@ -245,6 +246,7 @@ int main (int argc, char *argv[])
 			capture.get (CV_CAP_PROP_FRAME_HEIGHT
 		)
 	));
+	*/
 	#else
 	Mat frame = imread ("in.jpg", 1);
 	resize (frame, frame, Size (640, 640 * frame.rows / frame.cols));
