@@ -4,16 +4,6 @@
 namespace util
 {
 
-long long micros ()
-{
-	struct timespec now;
-	clock_gettime (CLOCK_MONOTONIC, &now);
-	
-	long long ret = now.tv_sec * 1000000LL +
-		now.tv_nsec / 1000LL;
-	return ret;
-}
-
 vector<cv::Point2f> roundedRectToPoints (cv::RotatedRect rr)
 {
 	typedef cv::Point2f P;

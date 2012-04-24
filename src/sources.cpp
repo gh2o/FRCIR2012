@@ -167,7 +167,7 @@ class AxisSource : public Source
 class StaticSource : public Source
 {
 	Mat orig;
-	long long us_last;
+	struct timespec ns_last;
 	
 	public:
 	StaticSource ()
@@ -178,33 +178,19 @@ class StaticSource : public Source
 		check_if_ready ("ERROR: Image " + filename +
 			" does not exist or cannot be read.");
 		
-		us_last = 0;
+		ns_last.tv_sec = 0;
+		ns_last.tv_nsec = 0;
 	}
 	
 	void operator>> (Mat& image)
 	{
 		// limit to 30 fps
-		const int us_per_frame = 1000000 / 30;
-		while (true)
-		{
-			long long us_now = util::micros ();
-			long long us_next = us_last + us_per_frame;
-			long long us_remaining = us_next - us_now;
-			
-			if (us_remaining <= 0)
-			{
-				if (us_next < us_now - us_per_frame) // lagging behind
-					us_last = us_now; // catch up
-				else
-					us_last = us_next;
-				break;
-			}
-			
-			struct timespec sleep;
-			sleep.tv_sec = 0;
-			sleep.tv_nsec = us_remaining * 1000;
-			nanosleep (&sleep, NULL);
-		}
+		const int ns_per_frame = 1000000000 / 30;
+		
+		struct timespec sleep;
+		sleep.tv_sec = 0;
+		sleep.tv_nsec = ns_per_frame;
+		nanosleep (&sleep, NULL);
 		
 		orig.copyTo (image);
 	}

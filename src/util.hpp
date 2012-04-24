@@ -20,7 +20,6 @@ class NamedException : public std::exception
 	virtual const char* what () const throw () { return reason.c_str (); }
 };
 
-long long micros ();
 vector<cv::Point2f> roundedRectToPoints (cv::RotatedRect rr);
 
 }
