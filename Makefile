@@ -2,7 +2,7 @@ CCACHE := $(shell which ccache 2>/dev/null)
 CC = $(CCACHE) gcc
 CXX = $(CCACHE) g++
 
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -O2
 LDFLAGS = -lrt -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_calib3d
 
 SRCFILES = $(wildcard src/*.cpp)

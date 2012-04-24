@@ -62,7 +62,7 @@ void send (vector<cv::Point3f> points)
 	int chunks = points.size () * 3;
 	uint64_t* dp = new uint64_t[chunks];
 	
-	for (int i = 0; i < points.size (); i++)
+	for (unsigned i = 0; i < points.size (); i++)
 	{
 		cv::Point3f& pt = points[i];
 		
