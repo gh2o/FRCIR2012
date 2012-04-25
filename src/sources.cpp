@@ -20,16 +20,6 @@ using std::cerr;
 using std::endl;
 using cv::Mat;
 
-void Source::check_if_ready (string errmsg)
-{
-	Mat frame;
-	*this >> frame;
-	
-	ready = !frame.empty ();
-	if (!ready)
-		cerr << errmsg << endl;
-}
-
 class WebcamSource : public Source
 {
 	cv::VideoCapture cap;
@@ -53,7 +43,7 @@ class WebcamSource : public Source
 			return;
 		}
 		
-		check_if_ready ("ERROR: Unable to fetch image from webcam device.");
+		ready = true;
 	}
 	
 	~WebcamSource ()
@@ -127,9 +117,7 @@ class AxisSource : public Source
 			}
 		}
 		
-		// check if we can grab a frame from the camera
-		check_if_ready ("ERROR: Unable to prepare video source "
-			"from Axis camera.");
+		ready = true;
 	}
 	
 	void operator>> (Mat& image)
@@ -143,8 +131,10 @@ class AxisSource : public Source
 			execlp ("wget", "wget", "-q",
 				"-t", "2", "-T", "5",
 				"-O", temppath.c_str (), url.c_str (), NULL);
+				
 			cerr << "ERROR: Unable to invoke wget: " << strerror (errno) << endl;
-			exit (1);
+			image = Mat ();
+			return;
 		}
 		
 		int status;
@@ -157,6 +147,7 @@ class AxisSource : public Source
 		)
 		{
 			cerr << "ERROR: Unable to fetch next frame from camera." << endl;
+			image = Mat ();
 			return;
 		}
 		
@@ -175,11 +166,17 @@ class StaticSource : public Source
 		string filename = options::get ("static").value;
 		orig = cv::imread (filename);
 		
-		check_if_ready ("ERROR: Image " + filename +
-			" does not exist or cannot be read.");
+		if (orig.empty ())
+		{
+			cerr << "ERROR: Image " + filename +
+				" does not exist or cannot be read." << endl;
+			return;
+		}
 		
 		ns_last.tv_sec = 0;
 		ns_last.tv_nsec = 0;
+		
+		ready = true;
 	}
 	
 	void operator>> (Mat& image)
