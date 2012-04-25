@@ -36,6 +36,8 @@ class WebcamSource : public Source
 		}
 	
 		cap.open (device);
+		cap.set (CV_CAP_PROP_FRAME_WIDTH, 640);
+		cap.set (CV_CAP_PROP_FRAME_HEIGHT, 480);
 		
 		if (!cap.isOpened ())
 		{
