@@ -27,6 +27,7 @@ static optvec getoptions ()
 	vec.push_back (Option ("axisquality", "QUALITY", "image quality of Axis camera (default = 80)",
 		"80"));
 	vec.push_back (Option ("fov", "FOV", "horizontal angle of view of camera (default = 47)", "47"));
+	vec.push_back (Option ("snapshots", "DIR", "turn on snapshots, save them in this directory"));
 	return vec;
 }
 

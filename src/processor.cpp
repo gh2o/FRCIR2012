@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 #include <opencv2/opencv.hpp>
 #include "options.hpp"
 #include "processor.hpp"
@@ -99,7 +100,9 @@ class Processor
 	Mat red, green, blue;
 	Mat imask, omask, temp;
 	Mat greenOverBlue, greenOverRed, brightGreen;
-
+	int index;
+	time_t last;
+	
 	void initMatrices ()
 	{
 		#define MATINIT(x) x.create (input.rows, input.cols, CV_8UC1)
@@ -320,8 +323,42 @@ class Processor
 			));
 		}
 	}
-
+	
+	void showImages ()
+	{
+		ui::show ("Binary", binary);
+		ui::show ("Input", input);
+	}
+	
+	void writeImages ()
+	{
+		if (snapshotDirectory.empty ())
+			return;
+	
+		time_t now = time (NULL);
+		if (now - last >= 5)
+		{
+			last = now;
+			index++;
+			
+			std::stringstream ss;
+			ss << snapshotDirectory << "/";
+			ss << std::setw (8) << std::setfill ('0');
+			ss << index;
+			string base = ss.str ();
+			
+			vector<int> params;
+			params.push_back (CV_IMWRITE_JPEG_QUALITY);
+			params.push_back (78);
+			
+			cv::imwrite (base + "b.jpg", binary, params);
+			cv::imwrite (base + "i.jpg", input, params);
+		}
+	}
+	
 	public:
+	Processor () : index (0), last (0) {}
+	
 	void process (Mat& frame, vector<cv::Point3f>& points)
 	{
 		input = frame;
@@ -333,11 +370,13 @@ class Processor
 		rotateQuads ();
 		solvePoints (points);
 		
-		ui::show ("Binary", binary);
+		showImages ();
+		writeImages ();
 	}
 };
 
 Processor processor;
+string snapshotDirectory ("");
 
 void process (Mat &frame, vector<cv::Point3f>& points)
 {

@@ -9,4 +9,6 @@ using std::string;
 using std::vector;
 
 void process (Mat &frame, vector<cv::Point3f>& points);
+
+extern string snapshotDirectory;
 }
