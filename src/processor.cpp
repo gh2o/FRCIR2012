@@ -206,7 +206,10 @@ class Processor
 				continue;
 			
 			// check if borders with empty middle
-			int erosions = (int) ui::pref ("ErodeD", "Binary", 20, 1, 6);
+			//int erosions = (int) ui::pref ("ErodeD", "Binary", 20, 1, 6);
+			int erosions = (int)(
+				cv::arcLength (approx, true) / ui::pref ("ErodeD", "Binary", 100, 1, 59)
+			);
 			
 			omask = cv::Scalar (0);
 			cv::fillConvexPoly (omask, &(approx.front ()), approx.size (), cv::Scalar (256));
